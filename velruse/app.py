@@ -37,15 +37,15 @@ def auth_denied_view(context, request):
     token = generate_token()
     storage = request.registry.velruse_store
     error_dict = {
-        'code': getattr(context, 'code', None), 
-        'description': context.message, 
+        'code': getattr(context, 'code', None),
+        'description': context.message,
     }
     storage.store(token, error_dict, expires=300)
     form = redirect_form(end_point, token)
     return Response(body=form)
 
 
-@view_config(name='auth_info', request_param='format=json', renderer='json')
+@view_config(name='auth_info', xhr=True, renderer='json')
 def auth_info_view(request):
     storage = request.registry.velruse_store
     token = request.GET['token']
@@ -100,7 +100,6 @@ def includeme(config):
 
     for provider in providers:
         config.include(provider)
-
     # add the error views
     config.scan(__name__)
 
